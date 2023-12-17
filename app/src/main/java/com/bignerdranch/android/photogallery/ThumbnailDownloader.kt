@@ -15,6 +15,28 @@ private const val TAG = "ThumbnailDownloader"
 private const val MESSAGE_DOWNLOAD = 0
 class ThumbnailDownloader<in T>(private val responseHandler: Handler, private val onThumbnailDownloaded: (T, Bitmap) -> Unit) : HandlerThread(TAG), LifecycleObserver {
 
+    val fragmentLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+            fun setup() {
+                Log.i(TAG, "Starting background thread")
+                start()
+                looper
+            }
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun tearDown() {
+                Log.i(TAG, "Destroying background thread")
+                quit()
+            }
+        }
+    val viewLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun clearQueue() {
+                Log.i(TAG, "Clearing all requests from queue")
+                requestHandler.removeMessages(MESSAGE_DOWNLOAD)
+                requestMap.clear()
+            }
+        }
+
     private var hasQuit = false
     private lateinit var requestHandler: Handler
     private val requestMap = ConcurrentHashMap<T, String>()
@@ -35,17 +57,6 @@ class ThumbnailDownloader<in T>(private val responseHandler: Handler, private va
     override fun quit(): Boolean {
         hasQuit = true
         return super.quit()
-    }
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun setup() {
-        Log.i(TAG, "Starting background thread")
-        start()
-        looper
-    }
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun tearDown() {
-        Log.i(TAG, "Destroying background thread")
-        quit()
     }
     fun queueThumbnail(target: T, url: String)
     {
