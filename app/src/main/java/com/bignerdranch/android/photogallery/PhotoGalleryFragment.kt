@@ -71,6 +71,7 @@ class PhotoGalleryFragment : Fragment(){
             val galleryItem = galleryItems[position]
             val placeholder: Drawable = ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close) ?: ColorDrawable()
             holder.bindDrawable(placeholder)
+            thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
         }
     }
     companion object{
