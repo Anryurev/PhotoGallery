@@ -88,6 +88,10 @@ class PhotoGalleryFragment : Fragment(){
                     return false
                 }
             })
+            setOnSearchClickListener {
+                searchView.setQuery(photoGalleryViewModel.searchTerm, false)
+            }
+
         }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
