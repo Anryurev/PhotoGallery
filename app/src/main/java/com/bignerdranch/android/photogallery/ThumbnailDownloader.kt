@@ -48,7 +48,7 @@ class ThumbnailDownloader<in T>(private val responseHandler: Handler, private va
             override fun handleMessage(msg: Message) {
                 if (msg.what == MESSAGE_DOWNLOAD) {
                     val target = msg.obj as T
-                    Log.i(TAG, "Got a requestfor URL: ${requestMap[target]}")
+                    Log.i(TAG, "Got a request for URL: ${requestMap[target]}")
                     handleRequest(target)
                 }
             }
